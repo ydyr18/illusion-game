@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Illusion — משחק האשליה המיסטי</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <!-- Supabase Client (UMD) -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <!-- Floating Particles Background -->
+  <div id="particles-container"></div>
+  
+  <!-- Loading Screen for Multiplayer -->
+  <div id="loadingScreen" class="loading-screen" style="display:none;">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <h2 class="loading-text">✨ טוען משחק מיסטי ✨</h2>
+      <p class="loading-subtext">מסנכרן עם שאר השחקנים...</p>
+    </div>
+  </div>
+  
+  <!-- Background Music Controls (Disabled for performance) -->
+  <!-- <button id="musicToggle" class="music-toggle" title="מוזיקת רקע">🔊</button> -->
+  
+  <!-- Main Title with Mystical Effect -->
+  <div class="main-title">
+    <h1>
+      <span class="title-mystical">✨</span>
+      אשליה
+      <span class="title-mystical">✨</span>
+    </h1>
+    <p class="subtitle">משחק קלפים מיסטי</p>
+  </div>
+
+  <div id="game">
+    <!-- מסך התחברות / לובי -->
+    <div id="lobby" class="panel lobby-mystical">
+      <h2 class="lobby-title">🎮 התחלת משחק 🎮</h2>
+      
+      <!-- Player Avatar & Name Section -->
+      <div class="player-setup">
+        <div class="avatar-section">
+          <div class="avatar-frame">
+            <img id="playerAvatar" src="" alt="Avatar" class="player-avatar">
+          </div>
+          <button id="randomizeAvatar" class="btn-secondary btn-small">🎲 שנה דמות</button>
+        </div>
+        <div class="player-info-row">
+          <div class="name-section">
+            <label>שם השחקן:</label>
+            <input type="text" id="myPlayerName" placeholder="שחקן אורח" class="input-mystical" />
+            <div class="gender-selection">
+              <label class="gender-option">
+                <input type="radio" name="gender" value="male" checked>
+                <span>בן</span>
+              </label>
+              <label class="gender-option">
+                <input type="radio" name="gender" value="female">
+                <span>בת</span>
+              </label>
+            </div>
+          </div>
+          <div class="score-target-section" id="scoreTargetSection">
+            <label>🎯 יעד נקודות לניצחון:</label>
+            <select id="targetScore" class="input-mystical">
+              <option value="2">2 נקודות</option>
+              <option value="3" selected>3 נקודות</option>
+              <option value="4">4 נקודות</option>
+              <option value="5">5 נקודות</option>
+            </select>
+            <div class="score-note">רק המארח קובע את יעד הנקודות</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="divider-mystical"></div>
+
+      <div class="lobby-actions">
+        <div class="action-card">
+           <div class="action-icon">✨</div>
+           <h3>יצירת משחק חדש</h3>
+           <p class="action-desc">צור מסע מיסטי חדש</p>
+           <button id="btnCreateGame" class="btn-primary">צור משחק</button>
+        </div>
+        <div class="divider-vertical"></div>
+        <div class="action-card">
+           <div class="action-icon">🔗</div>
+           <h3>הצטרפות למשחק</h3>
+           <p class="action-desc">הצטרף למסע קיים</p>
+           <input type="text" id="joinGameId" placeholder="הזן קוד משחק" class="input-mystical" style="margin-bottom:12px;">
+           <button id="btnJoinGame" class="btn-primary">הצטרף</button>
+        </div>
+      </div>
+      <div id="lobbyMessage" class="lobby-message"></div>
+    </div>
+
+    <!-- מסך המתנה לשחקנים (רק למי שבתוך משחק במצב waiting) -->
+    <div id="waitingRoom" class="panel" style="display:none;">
+      <h2>חדר המתנה</h2>
+      <div>קוד משחק: <span id="displayGameId" style="user-select:all; font-family:monospace; background:#333; padding:4px;"></span></div>
+      <p>מחכה לשחקנים נוספים...</p>
+      <div id="waitingPlayersList"></div>
+      <button id="btnStartMultiplayer" disabled>התחל משחק (מארח בלבד)</button>
+    </div>
+
+    <!-- מסך פתיחה (Setup) - מקומי בלבד (מוסתר בגרסת אונליין לטובת הלובי) -->
+    <div id="setup" class="panel" style="display:none;">
+      <div class="flex">
+        <label>מספר שחקנים (2–4):
+          <input id="numPlayersInput" type="number" value="3" min="2" max="4">
+        </label>
+        <button id="createPlayersBtn">צור שחקנים</button>
+      </div>
+      <div id="playersNames" style="margin-top:8px;"></div>
+      <button id="startGameBtn" style="margin-top:10px;" disabled>התחל משחק</button>
+    </div>
+
+    <!-- אזור מצב -->
+    <div id="statusPanel" class="panel" style="display:none;">
+      <!-- Players Display with Avatars -->
+      <div id="playersDisplay" class="players-display"></div>
+      
+      <div id="message"></div>
+    </div>
+
+    <!-- אזור משחק -->
+    <div id="playArea" class="panel" style="display:none;">
+      <!-- Deck centered at top with challenge button -->
+      <div style="display: flex; justify-content: center; align-items: flex-start; gap: 30px; margin-bottom: 20px;">
+        <div class="card-box deck-centered">
+          <div class="card-box-title">גרור את הקלף הבא למקום המתאים בשורת הקלפים:</div>
+          <div id="nextCardContainer"></div>
+        </div>
+        <button id="challengeBtn" style="align-self: center;">ערעור</button>
+      </div>
+
+      <hr class="divider">
+
+      <!-- Row area with arrow on RIGHT side (RTL) -->
+      <div style="display: flex; gap: 20px; align-items: flex-start; direction: rtl;">
+        <!-- Arrow card on the RIGHT (first in RTL) -->
+        <div class="card-box arrow-box-right">
+          <div class="card-box-title">הניחו את הקלפים בסדר הנכון לפי הצבע הבא:</div>
+          <div id="arrowCardContainer"></div>
+        </div>
+        
+        <!-- Row area (second in RTL) -->
+        <div style="flex: 1;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+            <span style="font-size: 18px; font-weight: 500;">שורת הקלפים:</span>
+            <div class="help-icon-wrapper">
+              <div class="help-icon">❓</div>
+              <div class="help-tooltip">
+                <strong>כיצד לסדר את הקלפים:</strong><br>
+                סדר את הקלפים <strong>מימין לשמאל</strong> לפי אחוזי הצבע העולים<br>
+                (נמוך ← גבוה)
+              </div>
+            </div>
+          </div>
+          
+          <!-- Scrollable row container with arrows -->
+          <div class="row-scroll-container">
+            <button class="scroll-arrow scroll-arrow-right" id="scrollRight" style="display: none;">◀</button>
+            <div id="row" class="row-scrollable"></div>
+            <button class="scroll-arrow scroll-arrow-left" id="scrollLeft" style="display: none;">▶</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="confettiCanvas"></canvas>
+  
+  <!-- Round Transition Timer -->
+  <div id="roundTransition" class="round-transition" style="display:none;">
+    <div class="round-transition-content">
+      <div class="round-transition-text">סיבוב הבא מתחיל בעוד...</div>
+      <div class="round-transition-timer" id="transitionTimer">15</div>
+      <div class="round-transition-progress">
+        <div class="round-transition-progress-bar" id="transitionProgress"></div>
+      </div>
+      <button id="skipTransitionBtn" class="btn-primary">⏭️ התחל עכשיו</button>
+    </div>
+  </div>
+  
+  <script src="game.js"></script>
+</body>
+</html>
