@@ -633,6 +633,13 @@
   
       const numSlots = state.row.length + 1;
       const isMyTurn = (state.currentPlayerIndex === getMyPlayerIndex());
+      
+      // Add 'many-cards' class after 2 cards to shrink slots and hide labels
+      if (state.row.length > 2) {
+        rowDiv.classList.add("many-cards");
+      } else {
+        rowDiv.classList.remove("many-cards");
+      }
   
       for (let i = 0; i < numSlots; i++) {
         // --- Create Slot ---
@@ -704,8 +711,8 @@
         }
       }
   
-      // Update scroll arrows after rendering
-      setTimeout(() => updateScrollArrows(), 100);
+      // Update progress bar after rendering
+      setTimeout(() => updateProgressBar(), 100);
       
       // עדכון הודעה אם צריך
     }
@@ -1602,62 +1609,76 @@
     
     // -------- Scroll Management for Row --------
     
-    function updateScrollArrows() {
+    function updateProgressBar() {
       const rowEl = $("row");
-      const scrollRightBtn = $("scrollRight");
-      const scrollLeftBtn = $("scrollLeft");
+      const progressIndicator = $("rowProgressIndicator");
+      const progressArrowRight = $("progressArrowRight");
+      const progressArrowLeft = $("progressArrowLeft");
       
-      if (!rowEl || !scrollRightBtn || !scrollLeftBtn) return;
+      if (!rowEl || !progressIndicator || !progressArrowRight || !progressArrowLeft) return;
       
       const hasScroll = rowEl.scrollWidth > rowEl.clientWidth;
       
       if (hasScroll) {
-        scrollRightBtn.style.display = "flex";
-        scrollLeftBtn.style.display = "flex";
+        // Calculate progress bar position (RTL aware)
+        const scrollWidth = rowEl.scrollWidth - rowEl.clientWidth;
+        const scrollPos = Math.abs(rowEl.scrollLeft);
+        const scrollPercentage = (scrollPos / scrollWidth) * 100;
         
-        // RTL: scrollLeft is negative or zero
-        // When at rightmost (start in RTL), scrollLeft is near 0
-        // When at leftmost (end in RTL), scrollLeft is most negative
+        // Update indicator position and width
+        const visiblePercentage = (rowEl.clientWidth / rowEl.scrollWidth) * 100;
+        progressIndicator.style.width = `${visiblePercentage}%`;
+        progressIndicator.style.right = `${scrollPercentage}%`; // RTL: move from right
         
-        const atRightEdge = rowEl.scrollLeft >= 0 || Math.abs(rowEl.scrollLeft) < 10;
-        const atLeftEdge = Math.abs(rowEl.scrollLeft) >= (rowEl.scrollWidth - rowEl.clientWidth - 10);
+        // Enable/disable arrows based on position
+        const atRightEdge = scrollPos < 10;
+        const atLeftEdge = scrollPos >= (scrollWidth - 10);
         
-        scrollRightBtn.style.opacity = atRightEdge ? "0.3" : "1";
-        scrollRightBtn.style.pointerEvents = atRightEdge ? "none" : "auto";
+        if (atRightEdge) {
+          progressArrowRight.classList.add("disabled");
+        } else {
+          progressArrowRight.classList.remove("disabled");
+        }
         
-        scrollLeftBtn.style.opacity = atLeftEdge ? "0.3" : "1";
-        scrollLeftBtn.style.pointerEvents = atLeftEdge ? "none" : "auto";
+        if (atLeftEdge) {
+          progressArrowLeft.classList.add("disabled");
+        } else {
+          progressArrowLeft.classList.remove("disabled");
+        }
       } else {
-        scrollRightBtn.style.display = "none";
-        scrollLeftBtn.style.display = "none";
+        // No scroll needed - hide arrows
+        progressArrowRight.classList.add("disabled");
+        progressArrowLeft.classList.add("disabled");
+        progressIndicator.style.width = "100%";
+        progressIndicator.style.right = "0";
       }
     }
     
-    function initScrollArrows() {
+    function initProgressBarScrolling() {
       const rowEl = $("row");
-      const scrollRightBtn = $("scrollRight");
-      const scrollLeftBtn = $("scrollLeft");
+      const progressArrowRight = $("progressArrowRight");
+      const progressArrowLeft = $("progressArrowLeft");
       
-      if (!rowEl || !scrollRightBtn || !scrollLeftBtn) return;
+      if (!rowEl || !progressArrowRight || !progressArrowLeft) return;
       
       // Scroll right (toward start in RTL)
-      scrollRightBtn.addEventListener("click", () => {
+      progressArrowRight.addEventListener("click", () => {
         rowEl.scrollBy({ left: 300, behavior: "smooth" }); // positive = right in RTL
       });
       
       // Scroll left (toward end in RTL)
-      scrollLeftBtn.addEventListener("click", () => {
+      progressArrowLeft.addEventListener("click", () => {
         rowEl.scrollBy({ left: -300, behavior: "smooth" }); // negative = left in RTL
       });
       
-      // Update arrows on scroll
-      rowEl.addEventListener("scroll", updateScrollArrows);
+      // Update progress bar on scroll
+      rowEl.addEventListener("scroll", updateProgressBar);
       
-      // Update arrows on window resize
-      window.addEventListener("resize", updateScrollArrows);
+      // Update progress bar on window resize
+      window.addEventListener("resize", updateProgressBar);
       
       // Initial update
-      updateScrollArrows();
+      updateProgressBar();
     }
 
     function initMobileDropdown() {
@@ -1757,7 +1778,7 @@
         initParticles();
         // initBackgroundMusic(); // Disabled for performance optimization
         initAvatarSystem();
-        initScrollArrows();
+        initProgressBarScrolling();
         initMobileDropdown();
     });
 
