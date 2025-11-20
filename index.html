@@ -68,16 +68,16 @@
           <div class="score-target-section" id="scoreTargetSection">
             <label>🎯 יעד נקודות לניצחון:</label>
             
-            <!-- Native Select (Hidden on Mobile via CSS) -->
-            <select id="targetScore" class="input-mystical mobile-hidden-select">
+            <!-- Native Select (Always Hidden) -->
+            <select id="targetScore" class="input-mystical hidden-native-select">
               <option value="2">2 נקודות</option>
               <option value="3" selected>3 נקודות</option>
               <option value="4">4 נקודות</option>
               <option value="5">5 נקודות</option>
             </select>
             
-            <!-- Custom Dropdown (Visible only on Mobile) -->
-            <div id="mobileTargetScore" class="custom-dropdown desktop-hidden-dropdown" style="display: none;">
+            <!-- Custom Dropdown (Always Visible) -->
+            <div id="customTargetScore" class="custom-dropdown">
               <div class="dropdown-selected" id="dropdownSelected">3 נקודות</div>
               <div class="dropdown-options" id="dropdownOptions">
                 <div class="dropdown-option" data-value="2">2 נקודות</div>

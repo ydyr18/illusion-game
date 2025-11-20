@@ -1566,12 +1566,17 @@ button:disabled {
   pointer-events: none;
 }
 
-/* Custom Dropdown Styles (Mobile Only Logic Handled in Media Query) */
+/* Custom Dropdown Styles (Global) */
+.hidden-native-select {
+  display: none !important;
+}
+
 .custom-dropdown {
   position: relative;
   width: 100%;
   max-width: 280px;
   z-index: 100;
+  margin: 0 auto;
 }
 
 .dropdown-selected {
@@ -1645,16 +1650,6 @@ button:disabled {
 @media (max-width: 768px) {
   .main-title h1 {
     font-size: 48px;
-  }
-  
-  /* Hide native select on mobile */
-  .mobile-hidden-select {
-    display: none !important;
-  }
-  
-  /* Show custom dropdown on mobile */
-  .desktop-hidden-dropdown {
-    display: block !important;
   }
   
   .subtitle {
