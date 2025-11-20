@@ -467,6 +467,17 @@ button:disabled {
 
 button:disabled:hover {
   transform: none;
+}
+
+/* Challenge Button - Red Buzzer Style */
+.challenge-button {
+  background: linear-gradient(135deg, #DC2626, #B91C1C) !important;
+  box-shadow: 0 4px 20px rgba(220, 38, 38, 0.4) !important;
+}
+
+.challenge-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #B91C1C, #991B1B) !important;
+  box-shadow: 0 6px 30px rgba(220, 38, 38, 0.6) !important;
   box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
 }
 
@@ -1908,7 +1919,11 @@ button:disabled {
     height: 70px;
   }
 
-  /* 2. Deck & Challenge Button: Stack Vertically */
+  /* 2. Play Area: Add bottom padding for fixed button */
+  #playArea {
+    padding-bottom: 100px; /* Space for fixed challenge button */
+  }
+  
   #playArea > div:first-child {
     flex-direction: column;
     align-items: center;
@@ -1916,10 +1931,16 @@ button:disabled {
   }
   
   #challengeBtn {
-    width: 80%;
-    max-width: 250px;
-    align-self: center !important;
-    margin-top: 5px;
+    /* Mobile: Fixed at bottom */
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 300px;
+    z-index: 1000;
+    margin-top: 0;
+    box-shadow: 0 -2px 20px rgba(220, 38, 38, 0.5), 0 4px 30px rgba(0, 0, 0, 0.3);
   }
 
   /* 3. Arrow & Row: Stack Vertically */
