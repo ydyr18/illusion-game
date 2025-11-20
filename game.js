@@ -1625,15 +1625,13 @@
         progressIndicator.style.width = `${visiblePercentage}%`;
         
         // Calculate scroll position (RTL aware)
-        const scrollWidth = rowEl.scrollWidth - rowEl.clientWidth;
         const scrollPos = Math.abs(rowEl.scrollLeft);
         
-        // Calculate where the indicator should be positioned
-        // The indicator needs to move within the remaining space (100% - visiblePercentage)
-        const availableSpace = 100 - visiblePercentage;
-        const scrollPercentage = (scrollPos / scrollWidth) * availableSpace;
+        // Calculate how much content we've scrolled past (as percentage of TOTAL)
+        // This represents where the yellow indicator should START
+        const scrolledPastPercentage = (scrollPos / rowEl.scrollWidth) * 100;
         
-        progressIndicator.style.right = `${scrollPercentage}%`; // RTL: move from right
+        progressIndicator.style.right = `${scrolledPastPercentage}%`; // RTL: move from right
         
         // Enable/disable arrows based on position
         const atRightEdge = scrollPos < 10;
@@ -1675,6 +1673,43 @@
       progressArrowLeft.addEventListener("click", () => {
         rowEl.scrollBy({ left: -300, behavior: "smooth" }); // negative = left in RTL
       });
+      
+      // Mouse drag scrolling for desktop
+      let isDragging = false;
+      let startX = 0;
+      let scrollLeft = 0;
+      
+      rowEl.addEventListener("mousedown", (e) => {
+        // Only start drag if clicking on the row itself, not on cards
+        if (e.target.closest('.card') || e.target.closest('.slot')) return;
+        
+        isDragging = true;
+        rowEl.style.cursor = "grabbing";
+        startX = e.pageX - rowEl.offsetLeft;
+        scrollLeft = rowEl.scrollLeft;
+        e.preventDefault(); // Prevent text selection
+      });
+      
+      rowEl.addEventListener("mouseleave", () => {
+        isDragging = false;
+        rowEl.style.cursor = "grab";
+      });
+      
+      rowEl.addEventListener("mouseup", () => {
+        isDragging = false;
+        rowEl.style.cursor = "grab";
+      });
+      
+      rowEl.addEventListener("mousemove", (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const x = e.pageX - rowEl.offsetLeft;
+        const walk = (x - startX) * 2; // Multiply for faster scroll
+        rowEl.scrollLeft = scrollLeft - walk;
+      });
+      
+      // Set initial cursor
+      rowEl.style.cursor = "grab";
       
       // Update progress bar on scroll
       rowEl.addEventListener("scroll", updateProgressBar);
