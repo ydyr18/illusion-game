@@ -641,6 +641,9 @@
       } else {
         rowDiv.classList.remove("many-cards");
       }
+      
+      // Set color gradient triangle based on target color
+      updateRowGradient();
   
       for (let i = 0; i < numSlots; i++) {
         // --- Create Slot ---
@@ -716,6 +719,49 @@
       setTimeout(() => updateScrollMap(), 100);
       
       // עדכון הודעה אם צריך
+    }
+    
+    // -------- Color Gradient Triangle for Row --------
+    
+    function updateRowGradient() {
+      const rowEl = $("row");
+      if (!rowEl || !state.targetColor) return;
+      
+      // Get RGB values for the target color
+      const colorMap = {
+        red: '220, 38, 38',      // #DC2626
+        blue: '37, 99, 235',     // #2563EB
+        green: '22, 163, 74',    // #16A34A
+        yellow: '234, 179, 8'    // #EAB308
+      };
+      
+      const rgb = colorMap[state.targetColor] || '220, 38, 38';
+      
+      // Create gradient from transparent (right) to 80% color (left)
+      const gradient = `linear-gradient(to left, rgba(${rgb}, 0) 0%, rgba(${rgb}, 0.8) 100%)`;
+      
+      // Create triangle clip-path (RTL: starts at 0% height on right, 100% on left)
+      const clipPath = 'polygon(100% 100%, 0% 100%, 0% 0%, 100% 100%)';
+      
+      // Apply to ::before pseudo-element via CSS variable
+      rowEl.style.setProperty('--gradient-bg', gradient);
+      rowEl.style.setProperty('--gradient-clip', clipPath);
+      
+      // Update the ::before element
+      const style = document.createElement('style');
+      style.textContent = `
+        #row::before {
+          background: ${gradient};
+          clip-path: ${clipPath};
+        }
+      `;
+      
+      // Remove old gradient style if exists
+      const oldStyle = document.getElementById('row-gradient-style');
+      if (oldStyle) oldStyle.remove();
+      
+      style.id = 'row-gradient-style';
+      document.head.appendChild(style);
     }
     
     // -------- Auto-scroll to newly placed card --------
