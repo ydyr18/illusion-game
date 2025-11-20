@@ -144,25 +144,26 @@
 
     <!-- אזור משחק -->
     <div id="playArea" class="panel" style="display:none;">
-      <!-- Deck with color indicator and challenge button -->
+      <!-- Deck centered at top with challenge button -->
       <div style="display: flex; justify-content: center; align-items: flex-start; gap: 30px; margin-bottom: 20px;">
-        <div class="deck-with-color">
-          <div class="color-indicator" id="colorIndicator">
-            <span id="colorIndicatorText">אדום</span>
-          </div>
-          <div class="deck-section">
-            <div class="card-box-title">גרור את הקלף הבא למקום המתאים בשורת הקלפים לפי כמות הצבע שנבחר</div>
-            <div id="nextCardContainer"></div>
-          </div>
+        <div class="card-box deck-centered">
+          <div class="card-box-title">גרור את הקלף הבא למקום המתאים בשורת הקלפים:</div>
+          <div id="nextCardContainer"></div>
         </div>
         <button id="challengeBtn" style="align-self: center;">ערעור</button>
       </div>
 
       <hr class="divider">
 
-      <!-- Row area -->
+      <!-- Row area with arrow on RIGHT side (RTL) -->
       <div style="display: flex; gap: 20px; align-items: flex-start; direction: rtl;">
-        <!-- Row area -->
+        <!-- Arrow card on the RIGHT (first in RTL) -->
+        <div class="card-box arrow-box-right">
+          <div class="card-box-title">הניחו את הקלפים בסדר הנכון לפי הצבע הבא:</div>
+          <div id="arrowCardContainer"></div>
+        </div>
+        
+        <!-- Row area (second in RTL) -->
         <div style="flex: 1; min-width: 0; overflow: hidden;">
           <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
             <span style="font-size: 18px; font-weight: 500;">שורת הקלפים:</span>
