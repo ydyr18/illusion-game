@@ -1566,12 +1566,56 @@ button:disabled {
   
   .lobby-actions {
     flex-direction: column;
+    gap: 20px;
   }
   
   .divider-vertical {
     display: none;
   }
   
+  /* תיקון הלובי במובייל */
+  .player-info-row {
+    display: flex;
+    flex-direction: column; /* במקום שורה - טור */
+    gap: 20px; /* רווח יפה בין האלמנטים */
+    width: 100%;
+    align-items: center;
+  }
+
+  .name-section, 
+  .score-target-section {
+    width: 100%; /* תופס את כל הרוחב */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* שדות הקלט צריכים להיות רחבים אבל לא מדי */
+  .input-mystical,
+  #targetScore {
+    width: 100%;
+    max-width: 280px; /* שלא יהיה ענק מדי */
+    box-sizing: border-box; /* כדי שה-padding לא ישבור את הרוחב */
+  }
+
+  /* יישור הטקסטים */
+  .score-target-section label,
+  .name-section label {
+    align-self: center; /* ממורכז */
+    margin-bottom: 4px;
+    text-align: center;
+  }
+  
+  /* תיקון כפתורי המין */
+  .gender-selection {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    width: 100%;
+  }
+
+  /* Card sizes for mobile */
   .card {
     width: 90px;
     height: 135px;
@@ -1583,24 +1627,26 @@ button:disabled {
   }
   
   .card-box {
-    min-width: 150px;
+    min-width: auto;
+    width: 100%;
     padding: 15px;
+    box-sizing: border-box;
   }
-  
-  .challenge-popup {
-    padding: 30px 40px;
-  }
-  
-  .challenge-popup h2 {
-    font-size: 28px;
-  }
-  
-  .challenge-popup p {
-    font-size: 18px;
-  }
-  
+
   .player-setup {
     flex-direction: column;
+    gap: 30px;
+    padding: 0 10px;
+  }
+  
+  .panel {
+    padding: 20px;
+    margin: 10px;
+  }
+  
+  .action-card {
+    width: 100%;
+    box-sizing: border-box;
   }
 }
 
