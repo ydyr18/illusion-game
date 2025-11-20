@@ -716,6 +716,44 @@
       
       // עדכון הודעה אם צריך
     }
+    
+    // -------- Auto-scroll to newly placed card --------
+    
+    function scrollToCard(cardIndex) {
+      const rowEl = $("row");
+      if (!rowEl) return;
+      
+      // Find all card elements in the row
+      const cards = rowEl.querySelectorAll('.card');
+      if (cardIndex >= cards.length) return;
+      
+      const cardEl = cards[cardIndex];
+      
+      // Scroll so the card is centered in the viewport
+      cardEl.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center' // Center the card horizontally
+      });
+    }
+    
+    function highlightNewCard(cardIndex) {
+      const rowEl = $("row");
+      if (!rowEl) return;
+      
+      const cards = rowEl.querySelectorAll('.card');
+      if (cardIndex >= cards.length) return;
+      
+      const cardEl = cards[cardIndex];
+      
+      // Add a temporary highlight class
+      cardEl.classList.add('newly-placed');
+      
+      // Remove it after 1 second
+      setTimeout(() => {
+        cardEl.classList.remove('newly-placed');
+      }, 1000);
+    }
   
     // -------- לוגיקת משחק --------
   
@@ -820,6 +858,14 @@
       
         renderNextCard();
         renderRow();
+        
+        // 🆕 Auto-scroll to the newly placed card and highlight it
+        setTimeout(() => {
+          scrollToCard(index);
+          highlightNewCard(index);
+          updateScrollMap(); // Update the scroll map indicator
+        }, 100);
+        
         nextPlayer();
       
         if (isMultiplayer) {

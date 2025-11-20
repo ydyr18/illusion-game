@@ -686,6 +686,25 @@ button:disabled {
   transform: rotateY(180deg);
 }
 
+/* Newly placed card highlight animation */
+.card.newly-placed {
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(252, 211, 77, 0.8),
+    0 0 50px rgba(252, 211, 77, 0.5);
+  transform: scale(1.05);
+  animation: cardPulse 0.5s ease-in-out;
+}
+
+@keyframes cardPulse {
+  0%, 100% { 
+    transform: scale(1.05); 
+  }
+  50% { 
+    transform: scale(1.12); 
+  }
+}
+
 .card-front,
 .card-back {
   position: absolute;
