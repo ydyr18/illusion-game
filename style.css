@@ -923,12 +923,14 @@ button:disabled {
   content: '';
   position: absolute;
   top: 0;
-  right: 0;
-  width: 100%;
+  left: 0; /* Changed from right: 0 to left: 0 */
+  right: 0; /* Keep both to maintain full width */
   height: 100%;
   pointer-events: none; /* Don't block card interactions */
   border-radius: 14px; /* Match parent */
   z-index: 0;
+  /* Position will stick to content, not viewport */
+  background-attachment: local;
   /* Gradient and clip-path will be set via inline style in JS */
 }
 

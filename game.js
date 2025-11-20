@@ -747,12 +747,19 @@
       rowEl.style.setProperty('--gradient-bg', gradient);
       rowEl.style.setProperty('--gradient-clip', clipPath);
       
-      // Update the ::before element
+      // Simple approach: make ::before width match scrollWidth
+      // Get the actual content width
+      const contentWidth = rowEl.scrollWidth;
+      const viewportWidth = rowEl.clientWidth;
+      
       const style = document.createElement('style');
       style.textContent = `
         #row::before {
           background: ${gradient};
           clip-path: ${clipPath};
+          width: ${contentWidth}px; /* Match content width, not viewport */
+          left: 0;
+          right: auto;
         }
       `;
       
@@ -1622,7 +1629,11 @@
         renderAll();
         
         // 🆕 Auto-scroll to newly placed card (for multiplayer sync)
-        if (state.lastPlacedCardIndex !== null && state.lastPlacedCardIndex !== undefined) {
+        // Only show animation if I'm NOT the one who placed the card
+        const myPlayerIndex = getMyPlayerIndex();
+        const wasPlacedByMe = (state.lastPlacerIndex === myPlayerIndex);
+        
+        if (!wasPlacedByMe && state.lastPlacedCardIndex !== null && state.lastPlacedCardIndex !== undefined) {
             setTimeout(() => {
                 scrollToCard(state.lastPlacedCardIndex);
                 highlightNewCard(state.lastPlacedCardIndex);
