@@ -1574,12 +1574,33 @@ button:disabled {
   }
   
   /* תיקון הלובי במובייל */
+  .lobby-title {
+    font-size: 28px; /* הקטנה מ-36px */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    white-space: nowrap; /* מניעת שבירת שורה */
+  }
+
   .player-info-row {
     display: flex;
     flex-direction: column; /* במקום שורה - טור */
     gap: 20px; /* רווח יפה בין האלמנטים */
     width: 100%;
     align-items: center;
+  }
+
+  .avatar-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .avatar-frame {
+    margin: 0 auto;
   }
 
   .name-section, 
@@ -1611,8 +1632,19 @@ button:disabled {
   .gender-selection {
     display: flex;
     justify-content: center;
+    gap: 20px;
     margin-top: 10px;
     width: 100%;
+  }
+  
+  .gender-option {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 20px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
   }
 
   /* Card sizes for mobile */
