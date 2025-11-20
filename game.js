@@ -711,8 +711,8 @@
         }
       }
   
-      // Update progress bar after rendering
-      setTimeout(() => updateProgressBar(), 100);
+      // Update scroll map after rendering
+      setTimeout(() => updateScrollMap(), 100);
       
       // עדכון הודעה אם צריך
     }
@@ -1609,55 +1609,45 @@
     
     // -------- Scroll Management for Row --------
     
-    function updateProgressBar() {
+    function updateScrollMap() {
       const rowEl = $("row");
-      const progressIndicator = $("rowProgressIndicator");
-      const progressArrowRight = $("progressArrowRight");
-      const progressArrowLeft = $("progressArrowLeft");
+      const scrollMapIndicator = $("rowProgressIndicator");
+      const scrollMapArrowRight = $("progressArrowRight");
+      const scrollMapArrowLeft = $("progressArrowLeft");
       
-      if (!rowEl || !progressIndicator || !progressArrowRight || !progressArrowLeft) return;
+      if (!rowEl || !scrollMapIndicator || !scrollMapArrowRight || !scrollMapArrowLeft) return;
       
-      const hasScroll = rowEl.scrollWidth > rowEl.clientWidth;
+      // 1. Calculate yellow width (how much of the row is visible)
+      const visiblePercentage = (rowEl.clientWidth / rowEl.scrollWidth) * 100;
+      scrollMapIndicator.style.width = `${visiblePercentage}%`;
       
-      if (hasScroll) {
-        // Calculate visible percentage (width of yellow indicator)
-        const visiblePercentage = (rowEl.clientWidth / rowEl.scrollWidth) * 100;
-        progressIndicator.style.width = `${visiblePercentage}%`;
-        
-        // Calculate scroll position (RTL aware)
-        const scrollPos = Math.abs(rowEl.scrollLeft);
-        
-        // Calculate how much content we've scrolled past (as percentage of TOTAL)
-        // This represents where the yellow indicator should START
-        const scrolledPastPercentage = (scrollPos / rowEl.scrollWidth) * 100;
-        
-        progressIndicator.style.right = `${scrolledPastPercentage}%`; // RTL: move from right
-        
-        // Enable/disable arrows based on position
-        const atRightEdge = scrollPos < 10;
-        const atLeftEdge = scrollPos >= (scrollWidth - 10);
-        
-        if (atRightEdge) {
-          progressArrowRight.classList.add("disabled");
-        } else {
-          progressArrowRight.classList.remove("disabled");
-        }
-        
-        if (atLeftEdge) {
-          progressArrowLeft.classList.add("disabled");
-        } else {
-          progressArrowLeft.classList.remove("disabled");
-        }
+      // 2. Calculate yellow position (where we are on the row)
+      const scrollPos = Math.abs(rowEl.scrollLeft);
+      const scrolledPastPercentage = (scrollPos / rowEl.scrollWidth) * 100;
+      scrollMapIndicator.style.right = `${scrolledPastPercentage}%`;
+      
+      // 3. Calculate where yellow starts and ends on the bar
+      const yellowRight = scrolledPastPercentage; // Right edge (RTL)
+      const yellowLeft = scrolledPastPercentage + visiblePercentage; // Left edge (RTL)
+      
+      // 4. Enable/disable arrows based on whether yellow touches edges
+      const touchingRightEdge = yellowRight < 1; // Yellow touches right edge?
+      const touchingLeftEdge = yellowLeft > 99; // Yellow touches left edge?
+      
+      if (touchingRightEdge) {
+        scrollMapArrowRight.classList.add("disabled");
       } else {
-        // No scroll needed - hide arrows
-        progressArrowRight.classList.add("disabled");
-        progressArrowLeft.classList.add("disabled");
-        progressIndicator.style.width = "100%";
-        progressIndicator.style.right = "0";
+        scrollMapArrowRight.classList.remove("disabled");
+      }
+      
+      if (touchingLeftEdge) {
+        scrollMapArrowLeft.classList.add("disabled");
+      } else {
+        scrollMapArrowLeft.classList.remove("disabled");
       }
     }
     
-    function initProgressBarScrolling() {
+    function initScrollMapScrolling() {
       const rowEl = $("row");
       const progressArrowRight = $("progressArrowRight");
       const progressArrowLeft = $("progressArrowLeft");
@@ -1711,14 +1701,14 @@
       // Set initial cursor
       rowEl.style.cursor = "grab";
       
-      // Update progress bar on scroll
-      rowEl.addEventListener("scroll", updateProgressBar);
+      // Update scroll map on scroll
+      rowEl.addEventListener("scroll", updateScrollMap);
       
-      // Update progress bar on window resize
-      window.addEventListener("resize", updateProgressBar);
+      // Update scroll map on window resize
+      window.addEventListener("resize", updateScrollMap);
       
       // Initial update
-      updateProgressBar();
+      updateScrollMap();
     }
 
     function initMobileDropdown() {
@@ -1818,7 +1808,7 @@
         initParticles();
         // initBackgroundMusic(); // Disabled for performance optimization
         initAvatarSystem();
-        initProgressBarScrolling();
+        initScrollMapScrolling();
         initMobileDropdown();
     });
 

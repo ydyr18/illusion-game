@@ -825,11 +825,14 @@ button:disabled {
   height: 6px;
   background: rgba(168, 85, 247, 0.3);
   border-radius: 3px;
-  position: relative;
-  overflow: hidden;
+  position: relative; /* Container for absolute positioning */
+  overflow: hidden; /* Hide overflow */
 }
 
 .row-progress-indicator {
+  position: absolute; /* Allow positioning with right/top */
+  top: 0;
+  right: 0; /* Start from right (RTL) */
   height: 100%;
   background: linear-gradient(90deg, #FCD34D, #F59E0B);
   border-radius: 3px;
