@@ -1659,6 +1659,48 @@
       // Initial update
       updateScrollArrows();
     }
+
+    function initMobileDropdown() {
+      const dropdownSelected = document.getElementById('dropdownSelected');
+      const dropdownOptions = document.getElementById('dropdownOptions');
+      const options = document.querySelectorAll('.dropdown-option');
+      const nativeSelect = document.getElementById('targetScore');
+      
+      if (!dropdownSelected || !dropdownOptions || !nativeSelect) return;
+      
+      // Toggle dropdown
+      dropdownSelected.addEventListener('click', () => {
+        dropdownOptions.classList.toggle('open');
+      });
+      
+      // Close when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.custom-dropdown')) {
+          dropdownOptions.classList.remove('open');
+        }
+      });
+      
+      // Handle option selection
+      options.forEach(option => {
+        option.addEventListener('click', () => {
+          const value = option.dataset.value;
+          const text = option.textContent;
+          
+          // Update Custom Dropdown UI
+          dropdownSelected.textContent = text;
+          options.forEach(opt => opt.classList.remove('selected'));
+          option.classList.add('selected');
+          dropdownOptions.classList.remove('open');
+          
+          // Update Native Select (Hidden)
+          nativeSelect.value = value;
+          
+          // Trigger change event manually if needed (for game logic)
+          const event = new Event('change');
+          nativeSelect.dispatchEvent(event);
+        });
+      });
+    }
     
     // -------- אירועי Setup --------
     
@@ -1716,6 +1758,7 @@
         // initBackgroundMusic(); // Disabled for performance optimization
         initAvatarSystem();
         initScrollArrows();
+        initMobileDropdown();
     });
 
     // If DOM is already loaded (script at end of body)

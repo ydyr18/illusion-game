@@ -67,12 +67,26 @@
           </div>
           <div class="score-target-section" id="scoreTargetSection">
             <label>🎯 יעד נקודות לניצחון:</label>
-            <select id="targetScore" class="input-mystical">
+            
+            <!-- Native Select (Hidden on Mobile via CSS) -->
+            <select id="targetScore" class="input-mystical mobile-hidden-select">
               <option value="2">2 נקודות</option>
               <option value="3" selected>3 נקודות</option>
               <option value="4">4 נקודות</option>
               <option value="5">5 נקודות</option>
             </select>
+            
+            <!-- Custom Dropdown (Visible only on Mobile) -->
+            <div id="mobileTargetScore" class="custom-dropdown desktop-hidden-dropdown" style="display: none;">
+              <div class="dropdown-selected" id="dropdownSelected">3 נקודות</div>
+              <div class="dropdown-options" id="dropdownOptions">
+                <div class="dropdown-option" data-value="2">2 נקודות</div>
+                <div class="dropdown-option selected" data-value="3">3 נקודות</div>
+                <div class="dropdown-option" data-value="4">4 נקודות</div>
+                <div class="dropdown-option" data-value="5">5 נקודות</div>
+              </div>
+            </div>
+            
             <div class="score-note">רק המארח קובע את יעד הנקודות</div>
           </div>
         </div>
