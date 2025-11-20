@@ -757,29 +757,31 @@
       
       const rgb = colorMap[state.targetColor] || '220, 38, 38';
       
+      // Dynamic gradient: width grows with row content
+      // Always 100% color at left edge, 0% at right edge
+      // As row expands → triangle "stretches" → slope becomes gentler
+      const contentWidth = rowEl.scrollWidth;
+      
       // Create gradient from transparent (right) to 80% color (left)
       const gradient = `linear-gradient(to left, rgba(${rgb}, 0) 0%, rgba(${rgb}, 0.8) 100%)`;
       
       // Create triangle clip-path (RTL: starts at 0% height on right, 100% on left)
       const clipPath = 'polygon(100% 100%, 0% 100%, 0% 0%, 100% 100%)';
       
-      // Apply to ::before pseudo-element via CSS variable
-      rowEl.style.setProperty('--gradient-bg', gradient);
-      rowEl.style.setProperty('--gradient-clip', clipPath);
-      
-      // Simple approach: make ::before width match scrollWidth
-      // Get the actual content width
-      const contentWidth = rowEl.scrollWidth;
-      const viewportWidth = rowEl.clientWidth;
-      
       const style = document.createElement('style');
       style.textContent = `
         #row::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
           background: ${gradient};
           clip-path: ${clipPath};
-          width: ${contentWidth}px; /* Match content width, not viewport */
-          left: 0;
-          right: auto;
+          width: ${contentWidth}px; /* Dynamic width: grows with content */
+          pointer-events: none;
+          z-index: 0;
         }
       `;
       
@@ -1050,7 +1052,7 @@
       return -1;
     }
   
-    function onChallengeClicked() {
+    async function onChallengeClicked() {
       if (state.row.length <= 1) {
         setMessage("אין מספיק קלפים בשורה כדי לערער.");
         return;
@@ -1067,7 +1069,7 @@
       if (correct) {
         if (state.lastPlacerIndex == null) {
           setMessage("הרצף נכון, אבל אין שחקן אחרון שהניח קלף.");
-          endRound(null);
+          await endRound(null);
           return;
         }
         winnerIndex = state.lastPlacerIndex;
@@ -1099,11 +1101,11 @@
           showEndGameScreen(winnerIndex);
         }, 5000);
       } else {
-        endRound(winnerIndex);
+        await endRound(winnerIndex);
       }
     }
   
-    function endRound(roundWinnerIndex) {
+    async function endRound(roundWinnerIndex) {
       const challengeBtn = $("challengeBtn");
       if (challengeBtn) challengeBtn.disabled = true;
       
@@ -1120,6 +1122,11 @@
       
       // Show "Next Round" button for all players
       showNextRoundButton();
+      
+      // Sync to all players (so button appears for everyone)
+      if (isMultiplayer) {
+        await updateRemoteGameState();
+      }
     }
     
     function showNextRoundButton() {
@@ -1150,8 +1157,12 @@
     
     async function onPlayerReadyForNextRound() {
       // Mark this player as ready
-      const myPlayerIndex = state.players.indexOf(myPlayerName);
+      const myPlayerIndex = getMyPlayerIndex();
       if (myPlayerIndex === -1) return;
+      
+      if (!state.playersReadyForNextRound) {
+        state.playersReadyForNextRound = [];
+      }
       
       if (!state.playersReadyForNextRound.includes(myPlayerIndex)) {
         state.playersReadyForNextRound.push(myPlayerIndex);
@@ -1162,16 +1173,21 @@
         await updateRemoteGameState();
       }
       
-      // Update button text
+      // Update button text locally (will be synced via syncGameState)
       const skipBtn = $("skipTransitionBtn");
       if (skipBtn) {
-        skipBtn.textContent = `✓ אישרת (${state.playersReadyForNextRound.length}/${state.numPlayers})`;
+        skipBtn.textContent = `✓ אישרת! ממתין לשחקנים אחרים...`;
         skipBtn.disabled = true;
       }
       
       // Check if all players are ready
       if (state.playersReadyForNextRound.length >= state.numPlayers) {
         startNextRound();
+        
+        // Sync the start of new round
+        if (isMultiplayer) {
+          await updateRemoteGameState();
+        }
       }
     }
     
@@ -1180,6 +1196,12 @@
       const transitionDiv = $("roundTransition");
       if (transitionDiv) {
         transitionDiv.style.display = "none";
+      }
+      
+      // Remove counter text
+      const counterText = document.getElementById('readyCounter');
+      if (counterText) {
+        counterText.remove();
       }
       
       // Reset ready tracking
@@ -1198,6 +1220,11 @@
       }
       
       startRound();
+      
+      // Sync new round to all players
+      if (isMultiplayer) {
+        await updateRemoteGameState();
+      }
       const challengeBtn = $("challengeBtn");
       if (challengeBtn) challengeBtn.disabled = false;
       
@@ -1661,23 +1688,53 @@
             }, 100);
         }
         
-        // Update next round button if players are waiting
+        // 🆕 Show "Next Round" button for ALL players when round ends
+        if (state.revealed && !state.gameOver) {
+            showNextRoundButton();
+        }
+        
+        // Update next round button counter if players are waiting
         if (state.playersReadyForNextRound && state.playersReadyForNextRound.length > 0) {
             const skipBtn = $("skipTransitionBtn");
             const transitionDiv = $("roundTransition");
             
-            if (skipBtn && transitionDiv && transitionDiv.style.display !== "none") {
-                const myPlayerIndex = state.players.indexOf(myPlayerName);
+            if (skipBtn && transitionDiv) {
+                const myPlayerIndex = getMyPlayerIndex();
                 const iHaveClicked = state.playersReadyForNextRound.includes(myPlayerIndex);
                 
                 if (iHaveClicked) {
-                    skipBtn.textContent = `✓ אישרת (${state.playersReadyForNextRound.length}/${state.numPlayers})`;
+                    skipBtn.textContent = `✓ אישרת! ממתין לשחקנים אחרים...`;
                     skipBtn.disabled = true;
+                    
+                    // Show counter below button
+                    const counterText = document.getElementById('readyCounter') || document.createElement('div');
+                    counterText.id = 'readyCounter';
+                    counterText.style.cssText = 'text-align: center; margin-top: 10px; font-size: 18px; color: #FCD34D;';
+                    counterText.textContent = `${state.playersReadyForNextRound.length}/${state.numPlayers} אישרו מעבר לשלב הבא`;
+                    
+                    if (!document.getElementById('readyCounter')) {
+                        transitionDiv.appendChild(counterText);
+                    }
                 } else {
-                    skipBtn.textContent = `סיבוב הבא ⏭️ (${state.playersReadyForNextRound.length}/${state.numPlayers} אישרו)`;
+                    skipBtn.textContent = `סיבוב הבא ⏭️`;
                     skipBtn.disabled = false;
+                    
+                    // Show counter below button
+                    const counterText = document.getElementById('readyCounter') || document.createElement('div');
+                    counterText.id = 'readyCounter';
+                    counterText.style.cssText = 'text-align: center; margin-top: 10px; font-size: 18px; color: #FCD34D;';
+                    counterText.textContent = `${state.playersReadyForNextRound.length}/${state.numPlayers} אישרו מעבר לשלב הבא`;
+                    
+                    if (!document.getElementById('readyCounter')) {
+                        transitionDiv.appendChild(counterText);
+                    }
                 }
             }
+        }
+        
+        // Check if all players ready → start next round
+        if (state.playersReadyForNextRound && state.playersReadyForNextRound.length >= state.numPlayers && state.revealed && !state.gameOver) {
+            startNextRound();
         }
     }
     
