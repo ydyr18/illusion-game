@@ -567,25 +567,45 @@
     }
   
     function renderArrowCard() {
-      const container = $("arrowCardContainer");
-      container.innerHTML = "";
-      if (!state.arrowCard) return;
-      const c = state.targetColor;
-      const card = document.createElement("div");
-      card.className = "arrow-card";
+      const containerMobile = $("arrowCardContainer");
+      const containerDesktop = $("arrowCardContainerDesktop");
       
-      // Simple arrow triangle pointing LEFT
-      const arrow = document.createElement("div");
-      arrow.className = "arrow-shape arrow-" + c;
-      // No rotation needed - arrow-shape already points left with rotate(-90deg) in CSS
-      card.appendChild(arrow);
+      containerMobile.innerHTML = "";
+      containerDesktop.innerHTML = "";
+      
+      if (!state.arrowCard) return;
+      
+      const c = state.targetColor;
+      
+      // Create arrow card for mobile
+      const cardMobile = document.createElement("div");
+      cardMobile.className = "arrow-card";
+      
+      const arrowMobile = document.createElement("div");
+      arrowMobile.className = "arrow-shape arrow-" + c;
+      cardMobile.appendChild(arrowMobile);
   
-      const label = document.createElement("div");
-      label.className = "arrow-card-label";
-      label.textContent = colorNamesHeb[c];
-      card.appendChild(label);
+      const labelMobile = document.createElement("div");
+      labelMobile.className = "arrow-card-label";
+      labelMobile.textContent = colorNamesHeb[c];
+      cardMobile.appendChild(labelMobile);
   
-      container.appendChild(card);
+      containerMobile.appendChild(cardMobile);
+      
+      // Create arrow card for desktop (same code)
+      const cardDesktop = document.createElement("div");
+      cardDesktop.className = "arrow-card";
+      
+      const arrowDesktop = document.createElement("div");
+      arrowDesktop.className = "arrow-shape arrow-" + c;
+      cardDesktop.appendChild(arrowDesktop);
+  
+      const labelDesktop = document.createElement("div");
+      labelDesktop.className = "arrow-card-label";
+      labelDesktop.textContent = colorNamesHeb[c];
+      cardDesktop.appendChild(labelDesktop);
+  
+      containerDesktop.appendChild(cardDesktop);
     }
   
     function renderNextCard() {

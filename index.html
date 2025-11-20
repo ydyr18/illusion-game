@@ -148,7 +148,10 @@
       <div style="display: flex; justify-content: center; align-items: flex-start; gap: 30px; margin-bottom: 20px;">
         <div class="card-box deck-centered">
           <div class="card-box-title">גרור את הקלף הבא למקום המתאים בשורת הקלפים:</div>
-          <div id="nextCardContainer"></div>
+          <div style="display: flex; align-items: center; gap: 15px; direction: rtl;">
+            <div id="arrowCardContainer"></div>
+            <div id="nextCardContainer"></div>
+          </div>
         </div>
         <button id="challengeBtn" class="challenge-button" style="align-self: center;">ערעור</button>
       </div>
@@ -157,10 +160,10 @@
 
       <!-- Row area with arrow on RIGHT side (RTL) -->
       <div style="display: flex; gap: 20px; align-items: flex-start; direction: rtl;">
-        <!-- Arrow card on the RIGHT (first in RTL) -->
+        <!-- Arrow card on the RIGHT (first in RTL) - Desktop only -->
         <div class="card-box arrow-box-right">
           <div class="card-box-title">הניחו את הקלפים בסדר הנכון לפי הצבע הבא:</div>
-          <div id="arrowCardContainer"></div>
+          <div id="arrowCardContainerDesktop"></div>
         </div>
         
         <!-- Row area (second in RTL) -->

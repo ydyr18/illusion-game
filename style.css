@@ -1966,36 +1966,26 @@ button:disabled {
     box-shadow: 0 -2px 20px rgba(220, 38, 38, 0.5), 0 4px 30px rgba(0, 0, 0, 0.3);
   }
 
-  /* 3. Arrow & Row: Stack Vertically */
-  #playArea > hr.divider + div {
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  /* Arrow Box adjustments */
-  .arrow-box-right {
-    width: 100%;
-    max-width: none;
-    min-width: auto;
-    order: -1; /* Ensure it's above the row */
-    padding: 15px;
-    flex-direction: row; /* Horizontal layout inside box */
-    align-items: center;
-    justify-content: space-between;
-    gap: 15px;
-  }
-  
-  .arrow-box-right .card-box-title {
-    margin-bottom: 0;
-    text-align: right;
-    font-size: 14px;
-    flex: 1;
+  /* 3. Deck with arrow color box (MOBILE ONLY) */
+  .deck-centered #arrowCardContainer {
+    display: block !important; /* Show arrow in deck on mobile */
   }
   
   .arrow-card {
     width: 60px;
     height: 60px;
     flex-shrink: 0;
+  }
+
+  /* 4. Hide arrow box component (MOBILE ONLY) */
+  .arrow-box-right {
+    display: none !important;
+  }
+
+  /* 5. Row & Row: Stack Vertically */
+  #playArea > hr.divider + div {
+    flex-direction: column;
+    gap: 20px;
   }
   
   /* Row Container adjustments */
@@ -2014,6 +2004,11 @@ button:disabled {
 /* New layout styles */
 .deck-centered {
   min-width: 300px;
+}
+
+/* Desktop: Hide arrow in deck, show it in arrow-box-right */
+.deck-centered #arrowCardContainer {
+  display: none;
 }
 
 .arrow-box-right {
