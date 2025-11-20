@@ -1797,6 +1797,100 @@ button:disabled {
     width: 100%;
     box-sizing: border-box;
   }
+
+  /* --- Game Screen Mobile Fixes --- */
+
+  /* 1. Players Display: Horizontal Scroll (Instagram Stories style) */
+  .players-display {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding: 10px 5px;
+    gap: 15px;
+    width: 100%;
+    /* Hide scrollbar */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .players-display::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .player-card {
+    min-width: 90px;
+    padding: 10px;
+    flex-shrink: 0;
+  }
+  
+  .player-card-avatar {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .player-card.current-turn .player-card-avatar {
+    width: 70px;
+    height: 70px;
+  }
+
+  /* 2. Deck & Challenge Button: Stack Vertically */
+  #playArea > div:first-child {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px !important;
+  }
+  
+  #challengeBtn {
+    width: 80%;
+    max-width: 250px;
+    align-self: center !important;
+    margin-top: 5px;
+  }
+
+  /* 3. Arrow & Row: Stack Vertically */
+  #playArea > hr.divider + div {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* Arrow Box adjustments */
+  .arrow-box-right {
+    width: 100%;
+    max-width: none;
+    min-width: auto;
+    order: -1; /* Ensure it's above the row */
+    padding: 15px;
+    flex-direction: row; /* Horizontal layout inside box */
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+  }
+  
+  .arrow-box-right .card-box-title {
+    margin-bottom: 0;
+    text-align: right;
+    font-size: 14px;
+    flex: 1;
+  }
+  
+  .arrow-card {
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+  }
+  
+  /* Row Container adjustments */
+  #playArea > hr.divider + div > div:last-child {
+    width: 100%;
+  }
+  
+  /* Scroll arrows visibility */
+  .scroll-arrow {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
 }
 
 /* New layout styles */
