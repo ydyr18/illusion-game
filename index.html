@@ -164,7 +164,7 @@
         </div>
         
         <!-- Row area (second in RTL) -->
-        <div style="flex: 1;">
+        <div style="flex: 1; min-width: 0; overflow: hidden;">
           <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
             <span style="font-size: 18px; font-weight: 500;">שורת הקלפים:</span>
             <div class="help-icon-wrapper">
@@ -179,11 +179,11 @@
           
           <!-- Progress Bar with small arrows -->
           <div class="row-progress-bar-container">
-            <button class="progress-arrow progress-arrow-right" id="progressArrowRight">◀</button>
+            <button class="progress-arrow progress-arrow-right" id="progressArrowRight">▶</button>
             <div class="row-progress-bar">
               <div class="row-progress-indicator" id="rowProgressIndicator"></div>
             </div>
-            <button class="progress-arrow progress-arrow-left" id="progressArrowLeft">▶</button>
+            <button class="progress-arrow progress-arrow-left" id="progressArrowLeft">◀</button>
           </div>
           
           <!-- Scrollable row container (no arrows) -->

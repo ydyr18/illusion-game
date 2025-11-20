@@ -1620,14 +1620,19 @@
       const hasScroll = rowEl.scrollWidth > rowEl.clientWidth;
       
       if (hasScroll) {
-        // Calculate progress bar position (RTL aware)
-        const scrollWidth = rowEl.scrollWidth - rowEl.clientWidth;
-        const scrollPos = Math.abs(rowEl.scrollLeft);
-        const scrollPercentage = (scrollPos / scrollWidth) * 100;
-        
-        // Update indicator position and width
+        // Calculate visible percentage (width of yellow indicator)
         const visiblePercentage = (rowEl.clientWidth / rowEl.scrollWidth) * 100;
         progressIndicator.style.width = `${visiblePercentage}%`;
+        
+        // Calculate scroll position (RTL aware)
+        const scrollWidth = rowEl.scrollWidth - rowEl.clientWidth;
+        const scrollPos = Math.abs(rowEl.scrollLeft);
+        
+        // Calculate where the indicator should be positioned
+        // The indicator needs to move within the remaining space (100% - visiblePercentage)
+        const availableSpace = 100 - visiblePercentage;
+        const scrollPercentage = (scrollPos / scrollWidth) * availableSpace;
+        
         progressIndicator.style.right = `${scrollPercentage}%`; // RTL: move from right
         
         // Enable/disable arrows based on position
