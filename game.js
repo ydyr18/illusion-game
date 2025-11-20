@@ -201,6 +201,7 @@
       arrowCard: null,
       pendingCard: null,
       lastPlacerIndex: null,
+      lastPlacedCardIndex: null, // אינדקס הקלף האחרון שהונח (לצורך auto-scroll במולטיפלייר)
       revealed: false,
       gameOver: false,
       roundWinnerIndex: null, // מי ניצח בסיבוב - הוא יתחיל את הסיבוב הבא
@@ -794,6 +795,7 @@
       state.revealed = false;
       state.pendingCard = null;
       state.lastPlacerIndex = null;
+      state.lastPlacedCardIndex = null; // איפוס לסיבוב חדש
   
       const color = colors[Math.floor(Math.random() * colors.length)];
       state.targetColor = color;
@@ -850,6 +852,7 @@
         // מכניסים את הקלף לשורה
         state.row.splice(index, 0, cardToPlace);
         state.lastPlacerIndex = state.currentPlayerIndex;
+        state.lastPlacedCardIndex = index; // שמירת האינדקס לצורך sync במולטיפלייר
       
         // מוציאים מהחפיסה
         state.deck.shift();
@@ -863,7 +866,7 @@
         setTimeout(() => {
           scrollToCard(index);
           highlightNewCard(index);
-          updateScrollMap(); // Update the scroll map indicator
+          // updateScrollMap() will be called automatically by the scroll event
         }, 100);
         
         nextPlayer();
@@ -1571,6 +1574,15 @@
     function syncGameState(gameRow) {
         state = gameRow.state;
         renderAll();
+        
+        // 🆕 Auto-scroll to newly placed card (for multiplayer sync)
+        if (state.lastPlacedCardIndex !== null && state.lastPlacedCardIndex !== undefined) {
+            setTimeout(() => {
+                scrollToCard(state.lastPlacedCardIndex);
+                highlightNewCard(state.lastPlacedCardIndex);
+                // updateScrollMap() will be called automatically by the scroll event
+            }, 100);
+        }
         
         // Update next round button if players are waiting
         if (state.playersReadyForNextRound && state.playersReadyForNextRound.length > 0) {
