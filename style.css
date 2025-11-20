@@ -1879,8 +1879,9 @@ button:disabled {
     flex-direction: row;
     flex-wrap: nowrap;
     overflow-x: auto;
+    overflow-y: visible; /* אווטר מוגדל לא ייחתך */
     justify-content: flex-start;
-    padding: 10px 5px;
+    padding: 15px 5px; /* יותר padding למעלה ולמטה */
     gap: 15px;
     width: 100%;
     /* Hide scrollbar */
@@ -1920,6 +1921,9 @@ button:disabled {
     max-width: 250px;
     align-self: center !important;
     margin-top: 5px;
+    position: sticky;
+    top: 10px;
+    z-index: 100;
   }
 
   /* 3. Arrow & Row: Stack Vertically */
@@ -1965,6 +1969,12 @@ button:disabled {
     height: 40px;
     font-size: 20px;
   }
+  
+  /* Color gradient background for card row (will be set dynamically in JS) */
+  .row-scrollable {
+    /* Background will be set via JS based on target color */
+    /* Example: background: linear-gradient(to left, rgba(255,0,0,0), rgba(255,0,0,0.3)) */
+  }
 }
 
 /* New layout styles */
@@ -1979,6 +1989,35 @@ button:disabled {
   display: flex;
   flex-direction: column;
   justify-content: center; /* Center content vertically */
+}
+
+/* New deck with color indicator (Desktop & Mobile) */
+.deck-with-color {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  direction: rtl; /* RTL: color on right */
+}
+
+.color-indicator {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  color: white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+}
+
+.deck-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 /* Improved arrow shape */

@@ -566,26 +566,41 @@
       return cardDiv;
     }
   
-    function renderArrowCard() {
-      const container = $("arrowCardContainer");
-      container.innerHTML = "";
-      if (!state.arrowCard) return;
-      const c = state.targetColor;
-      const card = document.createElement("div");
-      card.className = "arrow-card";
+    function renderColorIndicator() {
+      const indicator = $("colorIndicator");
+      const indicatorText = $("colorIndicatorText");
       
-      // Simple arrow triangle pointing LEFT
-      const arrow = document.createElement("div");
-      arrow.className = "arrow-shape arrow-" + c;
-      // No rotation needed - arrow-shape already points left with rotate(-90deg) in CSS
-      card.appendChild(arrow);
-  
-      const label = document.createElement("div");
-      label.className = "arrow-card-label";
-      label.textContent = colorNamesHeb[c];
-      card.appendChild(label);
-  
-      container.appendChild(card);
+      if (!indicator || !indicatorText) return;
+      if (!state.targetColor) return;
+      
+      const c = state.targetColor;
+      
+      // Set background color
+      indicator.style.background = colorNamesHeb[c] === 'אדום' ? '#e53935' :
+                                   colorNamesHeb[c] === 'צהוב' ? '#FCD34D' :
+                                   colorNamesHeb[c] === 'ירוק' ? '#43a047' :
+                                   '#1e88e5'; // כחול
+      
+      // Set text
+      indicatorText.textContent = colorNamesHeb[c];
+      
+      // Update row background gradient (mobile only, but set for all)
+      const rowEl = $("row");
+      if (rowEl) {
+        const rgba = colorNamesHeb[c] === 'אדום' ? '229, 57, 53' :
+                     colorNamesHeb[c] === 'צהוב' ? '252, 211, 77' :
+                     colorNamesHeb[c] === 'ירוק' ? '67, 160, 71' :
+                     '30, 136, 229'; // כחול
+        
+        // Gradient from transparent (right) to color (left) - RTL
+        rowEl.style.background = `
+          linear-gradient(to left, 
+            rgba(${rgba}, 0) 0%, 
+            rgba(${rgba}, 0.15) 100%
+          ),
+          rgba(15, 10, 31, 0.4)
+        `;
+      }
     }
   
     function renderNextCard() {
@@ -807,7 +822,7 @@
       $("statusPanel").style.display = "block";
       $("playArea").style.display = "block";
   
-      renderArrowCard();
+      renderColorIndicator();
       renderNextCard();
       renderRow();
       updateScoreboard();
@@ -1605,7 +1620,7 @@
     }
     
     function renderAll() {
-        renderArrowCard();
+        renderColorIndicator();
         renderNextCard();
         renderRow();
         updateScoreboard();
